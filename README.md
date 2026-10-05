@@ -1,4 +1,4 @@
-# Roadmap de projets Rust — énoncés détaillés
+# Roadmap de mini-projets Rust
 
 ## Niveau 1
 
@@ -154,5 +154,3 @@
 - Gestion des entrées utilisateur (clavier ou souris) pendant que le jeu tourne.
 - Détection des collisions ou des interactions entre entités, si le jeu s'y prête.
 - Bonus : plusieurs niveaux, système de score, sauvegarde de progression.
-
-Si tu veux, dis-moi lequel tu comptes attaquer en premier et je peux le découper en étapes/jalons pour que tu saches par où commencer sans que je te donne de code.
