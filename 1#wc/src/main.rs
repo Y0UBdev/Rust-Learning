@@ -1,11 +1,6 @@
-use std::{fmt::format, fs::File, io::{self, BufReader, prelude::*}, pin::Pin};
+use std::{fs::File, io::{self, BufReader, prelude::*}, path::Path};
 
-use clap::{Parser, builder::Str};
-
-pub const ERR_OPEN_FILE: &str = "Erreur ! Echec de l'ouverture du fichier.";
-
-pub const LINES: &str = ".";
-pub const WORDS: &str = " ";
+use clap::{Parser};
 
 #[derive(Parser)]
 #[command(name = "wc", about = "Compte le contenu d’un fichier")]
@@ -27,15 +22,21 @@ struct DataFile {
 
 fn main() -> io::Result<()> {
     let args: Args = Args::parse();
+
+    let file = args.file;
+
+    let lines = args.lines || (!args.lines && !args.words);
+    let words = args.words || (!args.lines && !args.words);
+
+    let data = wc(&file, lines, words)?;
     
-    let data = wc(args.file, args.lines, args.words)?;
-    
-    display(data, args.lines, args.words);
+    display(data, &file, lines, words);
 
     Ok(())
 }
 
-fn wc(file: String, lines: bool, words: bool) -> io::Result<DataFile> {
+
+fn wc(file: &str, lines: bool, words: bool) -> io::Result<DataFile> {
     let text = read(file)?;
     
     let mut cw: Option<usize> = None;
@@ -47,7 +48,8 @@ fn wc(file: String, lines: bool, words: bool) -> io::Result<DataFile> {
     Ok(DataFile {words: cw, lines: cl})
 }
 
-fn read(file: String) -> io::Result<String> {
+
+fn read(file: &str) -> io::Result<String> {
     let file = File::open(&file)?;
     let mut bufreader = BufReader::new(file);
     let mut contents = String::new();
@@ -55,6 +57,7 @@ fn read(file: String) -> io::Result<String> {
 
     Ok(contents)
 }
+
 
 fn word_count(text: &str) -> usize {
     let parts: Vec<&str> = text.split_whitespace().collect();
@@ -66,7 +69,8 @@ fn line_count(text: &str) -> usize {
     return parts.len();
 }
 
-fn display(data: DataFile, lines: bool, words: bool) {
+
+fn display(data: DataFile, file: &str, lines: bool, words: bool) {
     let w= match data.words {
         Some(value) => format!("Words={value}"),
         None => String::from("Les mots non calculé"),
@@ -74,9 +78,16 @@ fn display(data: DataFile, lines: bool, words: bool) {
     let l = match data.lines {
         Some(value) => format!("Lines={value}"),
         None => String::from("Les lignes non calculé"),
-    }; 
+    };
     
-    if lines & words { println!("{w}\n{l}") }
-    else if words { println!("{w}") }
-    else { println!("{l}") }
+    let name = Path::new(file)
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy();    
+
+    println!("Données du fichier {}", name);
+    
+    if words & !lines { println!("{w}") }
+        else if lines & !words { println!("{l}") }
+        else { println!("{w}\n{l}") }
 }
