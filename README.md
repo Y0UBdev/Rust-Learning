@@ -2,7 +2,7 @@
 
 ## Niveau 1
 
-### Projet 1 : Utilitaire de comptage de fichier
+### [x] - Projet 1 : Utilitaire de comptage de fichier
 **Objectif** : reproduire le comportement d'un outil comme `wc`.
 **Cahier des charges** :
 - Le programme prend en argument le chemin d'un fichier texte.
